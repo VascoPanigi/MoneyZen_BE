@@ -76,4 +76,15 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "avatarURL='" + avatarURL + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", surname='" + surname + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
