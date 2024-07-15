@@ -1,4 +1,10 @@
 package vascopanigi.MoneyZen.payloads.user;
 
-public record UserLoginDTO() {
+import jakarta.validation.constraints.NotEmpty;
+
+public record UserLoginDTO(
+        @NotEmpty
+        String email,
+        @NotEmpty
+        String password) {
 }

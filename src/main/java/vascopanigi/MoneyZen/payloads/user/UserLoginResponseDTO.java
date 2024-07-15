@@ -1,4 +1,4 @@
 package vascopanigi.MoneyZen.payloads.user;
 
-public record UserLoginResponseDTO (){
+public record UserLoginResponseDTO (String accessToken){
 }
