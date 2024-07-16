@@ -21,10 +21,8 @@ public class Label {
 
     private String name;
 
-    private String avatarURL;
 
-    public Label(String name, String avatarURL) {
+    public Label(String name) {
         this.name = name;
-        this.avatarURL = avatarURL;
     }
 }
