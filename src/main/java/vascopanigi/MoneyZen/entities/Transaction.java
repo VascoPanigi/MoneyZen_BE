@@ -1,7 +1,6 @@
 package vascopanigi.MoneyZen.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import vascopanigi.MoneyZen.enums.expense.TransactionRecurrence;
 import vascopanigi.MoneyZen.enums.expense.TransactionType;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Setter
@@ -37,13 +36,13 @@ public class Transaction {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    @JsonManagedReference
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> rolesList;
+            name = "transaction_labels",
+            joinColumns = @JoinColumn(name = "transaction_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
+    private Set<Label> labels;
 
 
 
