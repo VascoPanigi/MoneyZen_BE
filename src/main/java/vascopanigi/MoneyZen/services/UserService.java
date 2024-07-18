@@ -7,16 +7,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import vascopanigi.MoneyZen.entities.Plan;
 import vascopanigi.MoneyZen.entities.Role;
 import vascopanigi.MoneyZen.entities.User;
+import vascopanigi.MoneyZen.enums.plan.PlanType;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.payloads.user.NewUserDTO;
 import vascopanigi.MoneyZen.repositories.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -28,6 +28,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder bCrypt;
+
+    @Autowired
+    private PlanService planService;
 
     public User findById(UUID id) {
         return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
@@ -48,6 +51,13 @@ public class UserService {
         Role userRole = roleService.findByRoleName("USER");
         roleList.add(userRole);
         user.setRolesList(roleList);
+
+        Set<Plan> newPlanSet = new HashSet<>();
+
+        newPlanSet.add(planService.findByPlanType(String.valueOf(PlanType.FREE)));
+
+        user.setPlans(newPlanSet);
+
         return this.userRepository.save(user);
     }
 
@@ -55,5 +65,20 @@ public class UserService {
         if (pageSize > 50) pageSize = 50;
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
         return userRepository.findAll(pageable);
+    }
+
+    public User findByIdAndUpdate(UUID id, NewUserDTO payload) {
+        User found = this.findById(id);
+        found.setName(payload.name());
+        found.setSurname(payload.surname());
+        found.setUsername(payload.username());
+        found.setEmail(payload.email());
+        found.setPassword(bCrypt.encode(payload.password()));
+        return userRepository.save(found);
+    }
+
+    public void findByIdAndDelete(UUID id) {
+        User found = this.findById(id);
+        this.userRepository.delete(found);
     }
 }
