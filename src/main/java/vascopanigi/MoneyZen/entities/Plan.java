@@ -37,7 +37,7 @@ public class Plan {
 
 //    @Setter(AccessLevel.NONE)
     private PlanDuration planDuration;
-    
+
     private double planCost;
     public Plan(PlanType planType) {
         this.planType = planType;
