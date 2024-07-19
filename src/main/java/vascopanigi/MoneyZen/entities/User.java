@@ -48,7 +48,7 @@ public class User implements UserDetails {
     private Set<PersonalWallet> personalWallets;
 
     @JsonManagedReference
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SharedWallet> sharedWallets;
 
     @JsonIgnoreProperties("user")

@@ -44,13 +44,11 @@ public class WalletService {
         Wallet wallet = walletRepository.findById(walletId)
                 .orElseThrow(() -> new NotFoundException("Wallet not found."));
 
-        if (wallet instanceof PersonalWallet) {
-            PersonalWallet personalWallet = (PersonalWallet) wallet;
+        if (wallet instanceof PersonalWallet personalWallet) {
             if (!personalWallet.getUser().getId().equals(currentUser.getId())) {
                 throw new UnauthorizedException("You are not authorized to view this wallet.");
             }
-        } else if (wallet instanceof SharedWallet) {
-            SharedWallet sharedWallet = (SharedWallet) wallet;
+        } else if (wallet instanceof SharedWallet sharedWallet) {
             boolean isMember = sharedWallet.getUsers().stream()
                     .anyMatch(user -> user.getId().equals(currentUser.getId()));
             if (!isMember) {
