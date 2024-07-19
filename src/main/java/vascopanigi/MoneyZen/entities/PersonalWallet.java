@@ -21,5 +21,8 @@ public class PersonalWallet extends Wallet{
     @JoinColumn(name = "user_id")
     private User user;
 
-
+    public PersonalWallet(String name, User user) {
+        super(name);
+        this.user = user;
+    }
 }

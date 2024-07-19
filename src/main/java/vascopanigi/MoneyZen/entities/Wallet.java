@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,10 +27,10 @@ public abstract class Wallet {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL)
-    private Set<Transaction> transactions;
+    private List<Transaction> transactions;
 
-    public Wallet(String name, double balance) {
+    public Wallet(String name) {
         this.name = name;
-        this.balance = balance;
+        this.balance = 0;
     }
 }
