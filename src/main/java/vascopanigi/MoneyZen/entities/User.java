@@ -1,5 +1,6 @@
 package vascopanigi.MoneyZen.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 @Setter
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({"password", "enabled", "authorities", "accountNonLocked", "credentialsNonExpired", "accountNonExpired"})
+
 public class User implements UserDetails {
     @Id
     @GeneratedValue
@@ -43,11 +46,11 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> rolesList;
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PersonalWallet> personalWallets;
 
-    @JsonManagedReference
+    @JsonBackReference
     @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SharedWallet> sharedWallets;
 

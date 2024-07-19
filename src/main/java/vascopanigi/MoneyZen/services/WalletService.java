@@ -9,13 +9,18 @@ import vascopanigi.MoneyZen.entities.User;
 import vascopanigi.MoneyZen.entities.Wallet;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.exceptions.UnauthorizedException;
+import vascopanigi.MoneyZen.payloads.user.UserDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
+import vascopanigi.MoneyZen.payloads.wallet.PersonalWalletDTO;
+import vascopanigi.MoneyZen.payloads.wallet.SharedWalletDTO;
+import vascopanigi.MoneyZen.payloads.wallet.WalletDTO;
+import vascopanigi.MoneyZen.repositories.PersonalWalletRepository;
+import vascopanigi.MoneyZen.repositories.SharedWalletRepository;
 import vascopanigi.MoneyZen.repositories.WalletRepository;
 import vascopanigi.MoneyZen.security.JWTTools;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WalletService {
@@ -24,6 +29,12 @@ public class WalletService {
 
     @Autowired
     private JWTTools jwtTools;
+
+    @Autowired
+    private SharedWalletRepository sharedWalletRepository;
+
+    @Autowired
+    private PersonalWalletRepository personalWalletRepository;
 
     public PersonalWallet savePersonalWallet(NewWalletDTO body, @AuthenticationPrincipal User currentUser){
         PersonalWallet personalWallet = new PersonalWallet(body.name(), currentUser);
@@ -56,6 +67,46 @@ public class WalletService {
             }
         }
         return wallet;
+    }
+
+    public List<WalletDTO> getAllUserWallets(User currentUser) {
+        List<WalletDTO> walletDTOs = new ArrayList<>();
+
+        // Fetch personal wallets
+        List<PersonalWallet> personalWallets = personalWalletRepository.findByUser(currentUser);
+        for (PersonalWallet personalWallet : personalWallets) {
+            PersonalWalletDTO dto = new PersonalWalletDTO(
+                    personalWallet.getId(),
+                    personalWallet.getName(),
+                    personalWallet.getBalance()
+            );
+            walletDTOs.add(dto);
+        }
+
+        // Fetch shared wallets
+        List<SharedWallet> sharedWallets = sharedWalletRepository.findByUsersContains(currentUser);
+        for (SharedWallet sharedWallet : sharedWallets) {
+            Set<UserDTO> userDTOs = sharedWallet.getUsers().stream().map(user ->
+                    new UserDTO(
+                            user.getId(),
+                            user.getName(),
+                            user.getSurname(),
+                            user.getUsername(),
+                            user.getEmail(),
+                            user.getAvatarURL()
+                    )
+            ).collect(Collectors.toSet());
+
+            SharedWalletDTO dto = new SharedWalletDTO(
+                    sharedWallet.getId(),
+                    sharedWallet.getName(),
+                    sharedWallet.getBalance(),
+                    userDTOs
+            );
+            walletDTOs.add(dto);
+        }
+
+        return walletDTOs;
     }
 
 

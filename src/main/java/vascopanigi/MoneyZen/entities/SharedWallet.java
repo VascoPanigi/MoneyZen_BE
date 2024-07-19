@@ -15,7 +15,7 @@ import java.util.Set;
 @Entity
 @Table(name="shared_wallets")
 public class SharedWallet extends Wallet {
-    @JsonBackReference
+    @JsonManagedReference
     @ManyToMany
     @JoinTable(
             name = "shared_wallet_user",

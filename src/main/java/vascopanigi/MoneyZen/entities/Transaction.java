@@ -6,8 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vascopanigi.MoneyZen.enums.expense.TransactionRecurrence;
-import vascopanigi.MoneyZen.enums.expense.TransactionType;
+import vascopanigi.MoneyZen.enums.transaction.TransactionRecurrence;
+import vascopanigi.MoneyZen.enums.transaction.TransactionType;
 
 import java.util.Date;
 import java.util.Set;
@@ -26,7 +26,9 @@ public class Transaction {
 
     private String name;
     private double amount;
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
+    @Enumerated(EnumType.STRING)
     private TransactionRecurrence transactionRecurrence;
     private String description;
     private Date date;
@@ -44,6 +46,16 @@ public class Transaction {
     )
     private Set<Label> labels;
 
+    public Transaction(String name, double amount, TransactionType transactionType, TransactionRecurrence transactionRecurrence, String description, Date date, Wallet wallet, Set<Label> labels) {
+        this.name = name;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.transactionRecurrence = transactionRecurrence;
+        this.description = description;
+        this.date = date;
+        this.wallet = wallet;
+        this.labels = labels;
+    }
 
-
+    
 }

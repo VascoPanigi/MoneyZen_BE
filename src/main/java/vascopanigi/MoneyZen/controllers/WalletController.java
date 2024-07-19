@@ -11,8 +11,10 @@ import vascopanigi.MoneyZen.entities.Wallet;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletResponseDTO;
+import vascopanigi.MoneyZen.payloads.wallet.WalletDTO;
 import vascopanigi.MoneyZen.services.WalletService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -46,5 +48,10 @@ public class WalletController {
     @GetMapping("/{walletId}")
     public Wallet getSpecificWallet(@PathVariable UUID walletId, @AuthenticationPrincipal User currentUser){
         return this.walletService.getWalletById(walletId, currentUser);
+    }
+
+    @GetMapping("/my-wallets")
+    public List<WalletDTO> getAllUserWallets(@AuthenticationPrincipal User currentUser) {
+        return walletService.getAllUserWallets(currentUser);
     }
 }
