@@ -53,8 +53,14 @@ public class User implements UserDetails {
     private Set<SharedWallet> sharedWallets;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Plan> plans;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_plans",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "plan_id")
+    )
+    private List<Plan> plans;
 
     public User(String name, String surname, String username, String email, String password) {
         this.name = name;
