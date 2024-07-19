@@ -11,7 +11,7 @@ import vascopanigi.MoneyZen.repositories.UserRepository;
 import vascopanigi.MoneyZen.services.RoleService;
 
 @Configuration
-public class BaseUsersAndRolesInitializer {
+public class RolesInitializer {
     @Autowired
     private RoleService roleService;
 
@@ -33,6 +33,7 @@ public class BaseUsersAndRolesInitializer {
             if (roleRepository.findByRoleName("USER").isEmpty()) {
                 roleRepository.save(new Role("USER"));
             }
+            System.out.println("Roles successfully initialized");
 
         } catch (BadRequestException e) {
             System.out.println("Roles initialization failed: " + e.getMessage());

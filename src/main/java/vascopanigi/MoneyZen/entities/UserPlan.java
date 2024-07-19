@@ -1,19 +1,60 @@
 package vascopanigi.MoneyZen.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
-@Table(name = "user_plan")
+@Table(name = "user_plans")
 public class UserPlan {
     @Id
     @GeneratedValue
     @Setter(AccessLevel.NONE)
     private UUID id;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
+
+    private LocalDateTime subscriptionTime;
+    private LocalDateTime subscriptionEndingTime;
+    private boolean isValid;
+
+    public UserPlan(User user, Plan plan, LocalDateTime subscriptionTime, LocalDateTime subscriptionEndingTime) {
+        this.user = user;
+        this.plan = plan;
+        this.subscriptionTime = subscriptionTime;
+        this.subscriptionEndingTime = subscriptionEndingTime;
+        this.isValid = true;
+    }
+
+    public void checkAndDisableIfExpired() {
+        if (this.subscriptionEndingTime != null && LocalDateTime.now().isAfter(this.subscriptionEndingTime)) {
+            this.isValid = false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "UserPlan{" +
+                "isValid=" + isValid +
+                ", subscriptionEndingTime=" + subscriptionEndingTime +
+                ", subscriptionTime=" + subscriptionTime +
+                '}';
+    }
 }

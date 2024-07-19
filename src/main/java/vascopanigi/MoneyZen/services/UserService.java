@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import vascopanigi.MoneyZen.entities.Plan;
 import vascopanigi.MoneyZen.entities.Role;
 import vascopanigi.MoneyZen.entities.User;
+import vascopanigi.MoneyZen.entities.UserPlan;
 import vascopanigi.MoneyZen.enums.plan.PlanDuration;
 import vascopanigi.MoneyZen.enums.plan.PlanType;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
@@ -17,6 +18,7 @@ import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.payloads.user.NewUserDTO;
 import vascopanigi.MoneyZen.repositories.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -52,11 +54,15 @@ public class UserService {
         Role userRole = roleService.findByRoleName("USER");
         roleList.add(userRole);
         user.setRolesList(roleList);
-        List<Plan> newPlanSet = new ArrayList<>();
+        List<UserPlan> userPlans  = new ArrayList<>();
         Plan freePlan = planService.findByPlanType(PlanType.FREE);
         freePlan.setPlanTypeAndDuration(PlanType.FREE, PlanDuration.MONTHLY);
-        newPlanSet.add(freePlan);
-        user.setPlans(newPlanSet);
+        UserPlan userPlan = new UserPlan(user, freePlan, LocalDateTime.now(), LocalDateTime.now().plusDays(30));
+        System.out.println(userPlan);
+        userPlans.add(userPlan);
+        System.out.println(userPlans);
+        user.setUserPlans(userPlans);
+        System.out.println(user);
         return this.userRepository.save(user);
     }
 

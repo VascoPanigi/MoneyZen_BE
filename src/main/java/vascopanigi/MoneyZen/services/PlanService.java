@@ -22,16 +22,6 @@ public class PlanService {
     }
 
 
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void updatePlanStatuses() {
-        List<Plan> plans = planRepository.findAll();
-        plans.forEach(plan -> {
-            if (plan.getSubscriptionEndingTime() != null && LocalDateTime.now().isAfter(plan.getSubscriptionEndingTime())) {
-                plan.setIsValid(false);
-                planRepository.save(plan);
-            }
-        });
-    }
 //    public Plan savePlan(NewPlanDTO body){
 //
 //    }

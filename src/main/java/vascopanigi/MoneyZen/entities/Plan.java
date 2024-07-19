@@ -1,7 +1,6 @@
 package vascopanigi.MoneyZen.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.github.javafaker.Bool;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +9,6 @@ import lombok.Setter;
 import vascopanigi.MoneyZen.enums.plan.PlanDuration;
 import vascopanigi.MoneyZen.enums.plan.PlanType;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,9 +37,6 @@ public class Plan {
 //    @Setter(AccessLevel.NONE)
     private PlanDuration planDuration;
 
-    private LocalDateTime subscriptionTime;
-    private LocalDateTime subscriptionEndingTime;
-    private Boolean isValid;
 
     //GESTIRE IL COSTO A SECONDA DEL PERIODO
 
@@ -50,9 +45,9 @@ public class Plan {
         this.planType = planType;
     }
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "plans")
-    private List<User> users;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
+    private List<UserPlan> userPlans;
 
 //    public void setPlanDuration(PlanDuration duration) {
 //        this.planDuration = duration;
@@ -70,8 +65,7 @@ public class Plan {
 
     private void updatePlanFeatures(PlanDuration planDuration) {
         this.planDuration = planDuration;
-        this.subscriptionTime = LocalDateTime.now();
-        this.isValid = true;
+
         switch (planType) {
             case FREE:
                 this.planCost = 0.0;
@@ -80,15 +74,12 @@ public class Plan {
                 this.allowAIAssistance = false;
                 this.maxPersonalWallets = 1;
                 this.maxSharedWallets = 0;
-                this.subscriptionTime = null;
                 break;
             case STANDARD:
                 if (planDuration == PlanDuration.MONTHLY) {
                     this.planCost = 2.99;
-                    this.subscriptionEndingTime = subscriptionTime.plusDays(30);
                 } else {
                     this.planCost = calculateAnnualCost(2.99, 0.20);
-                    this.subscriptionEndingTime = subscriptionTime.plusDays(365);
                 }
                 this.allowPersonalWallet = true;
                 this.allowSharedWallet = true;
@@ -100,10 +91,8 @@ public class Plan {
             case PREMIUM:
                 if (planDuration == PlanDuration.MONTHLY) {
                     this.planCost = 5.99;
-                    this.subscriptionEndingTime = subscriptionTime.plusDays(30);
                 } else {
                     this.planCost = calculateAnnualCost(5.99, 0.25);
-                    this.subscriptionEndingTime = subscriptionTime.plusDays(365);
                 }
                 this.allowPersonalWallet = true;
                 this.allowSharedWallet = true;

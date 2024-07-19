@@ -32,6 +32,7 @@ public class LabelInitializer {
                     String labelName = labels[i] ;
                     labelRepository.save(new Label(labelName));
                 }
+                System.out.println("Labels successfully initialized.");
             }
         } catch (Exception e) {
             System.out.println("Error during label initialization: " + e.getMessage());
