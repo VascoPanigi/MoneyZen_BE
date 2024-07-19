@@ -8,9 +8,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vascopanigi.MoneyZen.entities.User;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
-import vascopanigi.MoneyZen.payloads.user.NewUserResponseDTO;
-import vascopanigi.MoneyZen.payloads.wallet.NewPersonalWalletDTO;
-import vascopanigi.MoneyZen.payloads.wallet.NewPersonalWalletReponseDTO;
+import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
+import vascopanigi.MoneyZen.payloads.wallet.NewWalletResponseDTO;
 import vascopanigi.MoneyZen.services.WalletService;
 
 @RestController
@@ -21,12 +20,23 @@ public class WalletController {
 
     @PostMapping("/personal-wallets")
     @ResponseStatus(HttpStatus.CREATED)
-    public NewPersonalWalletReponseDTO savePersonalWallet(@RequestBody @Validated NewPersonalWalletDTO body, BindingResult validationResult,  @AuthenticationPrincipal User currentUser){
+    public NewWalletResponseDTO savePersonalWallet(@RequestBody @Validated NewWalletDTO body, BindingResult validationResult, @AuthenticationPrincipal User currentUser){
     if (validationResult.hasErrors()) {
         System.out.println(validationResult.getAllErrors());
         throw new BadRequestException(validationResult.getAllErrors());
     }
     System.out.println(body);
-    return new NewPersonalWalletReponseDTO(this.walletService.savePersonalWallet(body, currentUser).getId());
+    return new NewWalletResponseDTO(this.walletService.savePersonalWallet(body, currentUser).getId());
+    }
+
+    @PostMapping("/shared-wallets")
+    @ResponseStatus(HttpStatus.CREATED)
+    public NewWalletResponseDTO savesSharedWallet(@RequestBody @Validated NewWalletDTO body, BindingResult validationResult, @AuthenticationPrincipal User currentUser){
+        if (validationResult.hasErrors()) {
+            System.out.println(validationResult.getAllErrors());
+            throw new BadRequestException(validationResult.getAllErrors());
+        }
+        System.out.println(body);
+        return new NewWalletResponseDTO(this.walletService.saveSharedWallet(body, currentUser).getId());
     }
 }

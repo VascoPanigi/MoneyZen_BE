@@ -3,9 +3,15 @@ package vascopanigi.MoneyZen.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name="shared_wallets")
 public class SharedWallet extends Wallet {
@@ -17,4 +23,8 @@ public class SharedWallet extends Wallet {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> users;
+
+    public SharedWallet(String name) {
+        super(name);
+    }
 }
