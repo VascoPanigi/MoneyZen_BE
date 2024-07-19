@@ -1,5 +1,6 @@
 package vascopanigi.MoneyZen.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -50,8 +51,8 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Set<SharedWallet> sharedWallets;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<UserPlan> userPlans;
 
     public User(String name, String surname, String username, String email, String password) {

@@ -1,5 +1,6 @@
 package vascopanigi.MoneyZen.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -36,16 +37,13 @@ public class Plan {
 
 //    @Setter(AccessLevel.NONE)
     private PlanDuration planDuration;
-
-
-    //GESTIRE IL COSTO A SECONDA DEL PERIODO
-
+    
     private double planCost;
     public Plan(PlanType planType) {
         this.planType = planType;
     }
 
-    @JsonManagedReference
+    @JsonIgnoreProperties("plan")
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
     private List<UserPlan> userPlans;
 

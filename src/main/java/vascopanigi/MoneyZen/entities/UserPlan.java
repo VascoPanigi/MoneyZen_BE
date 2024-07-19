@@ -1,6 +1,7 @@
 package vascopanigi.MoneyZen.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,13 +23,11 @@ public class UserPlan {
     private UUID id;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("userPlans")    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "plan_id")
+    @JsonIgnoreProperties("userPlans")    @JoinColumn(name = "plan_id")
     private Plan plan;
 
     private LocalDateTime subscriptionTime;
