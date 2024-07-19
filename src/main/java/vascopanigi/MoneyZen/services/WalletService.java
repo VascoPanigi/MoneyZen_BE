@@ -6,12 +6,16 @@ import org.springframework.stereotype.Service;
 import vascopanigi.MoneyZen.entities.PersonalWallet;
 import vascopanigi.MoneyZen.entities.SharedWallet;
 import vascopanigi.MoneyZen.entities.User;
+import vascopanigi.MoneyZen.entities.Wallet;
+import vascopanigi.MoneyZen.exceptions.NotFoundException;
+import vascopanigi.MoneyZen.exceptions.UnauthorizedException;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
 import vascopanigi.MoneyZen.repositories.WalletRepository;
 import vascopanigi.MoneyZen.security.JWTTools;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class WalletService {
@@ -35,5 +39,26 @@ public class WalletService {
         sharedWallet.setUsers(usersSet);
         return walletRepository.save(sharedWallet);
     }
+
+    public Wallet getWalletById(UUID walletId, User currentUser) {
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new NotFoundException("Wallet not found."));
+
+        if (wallet instanceof PersonalWallet) {
+            PersonalWallet personalWallet = (PersonalWallet) wallet;
+            if (!personalWallet.getUser().getId().equals(currentUser.getId())) {
+                throw new UnauthorizedException("You are not authorized to view this wallet.");
+            }
+        } else if (wallet instanceof SharedWallet) {
+            SharedWallet sharedWallet = (SharedWallet) wallet;
+            boolean isMember = sharedWallet.getUsers().stream()
+                    .anyMatch(user -> user.getId().equals(currentUser.getId()));
+            if (!isMember) {
+                throw new UnauthorizedException("You are not authorized to view this wallet.");
+            }
+        }
+        return wallet;
+    }
+
 
 }

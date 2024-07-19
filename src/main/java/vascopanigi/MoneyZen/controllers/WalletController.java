@@ -7,10 +7,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vascopanigi.MoneyZen.entities.User;
+import vascopanigi.MoneyZen.entities.Wallet;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletResponseDTO;
 import vascopanigi.MoneyZen.services.WalletService;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/wallets")
@@ -38,5 +41,10 @@ public class WalletController {
         }
         System.out.println(body);
         return new NewWalletResponseDTO(this.walletService.saveSharedWallet(body, currentUser).getId());
+    }
+
+    @GetMapping("/{walletId}")
+    public Wallet getSpecificWallet(@PathVariable UUID walletId, @AuthenticationPrincipal User currentUser){
+        return this.walletService.getWalletById(walletId, currentUser);
     }
 }
