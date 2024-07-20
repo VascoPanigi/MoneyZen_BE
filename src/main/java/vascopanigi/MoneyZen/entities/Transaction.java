@@ -56,4 +56,28 @@ public class Transaction {
         this.description = description;
         this.date = date;
     }
+
+    public Transaction(String name, double amount, TransactionRecurrence transactionRecurrence, String description, LocalDateTime date, Wallet wallet, Category category) {
+        this.name = name;
+        this.amount = amount;
+        this.transactionRecurrence = transactionRecurrence;
+        this.description = description;
+        this.date = date;
+        this.wallet = wallet;
+        this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", amount=" + amount +
+                ", transactionRecurrence=" + transactionRecurrence +
+                ", description='" + description + '\'' +
+                ", date=" + date +
+                ", wallet=" + wallet +
+                ", category=" + category +
+                '}';
+    }
 }

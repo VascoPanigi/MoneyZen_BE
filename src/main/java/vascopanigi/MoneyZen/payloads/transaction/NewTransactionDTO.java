@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 public record NewTransactionDTO (
         @NotNull
@@ -14,11 +15,14 @@ public record NewTransactionDTO (
         String name,
         @NotNull
         double amount,
-        @NotEmpty
-        String transactionType,
-        @NotEmpty
+        @NotNull
         String transactionRecurrence,
         String description,
+        @NotNull
+        UUID walletId,
+        @NotNull
+        String categoryName,
+        @NotNull
         LocalDateTime date
 //        Set<Label> labels
 ){
