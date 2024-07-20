@@ -3,7 +3,7 @@ package vascopanigi.MoneyZen.payloads.transaction;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import vascopanigi.MoneyZen.entities.Label;
+//import vascopanigi.MoneyZen.entities.Label;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -19,7 +19,7 @@ public record NewTransactionDTO (
         @NotEmpty
         String transactionRecurrence,
         String description,
-        LocalDateTime date,
-        Set<Label> labels
+        LocalDateTime date
+//        Set<Label> labels
 ){
 }

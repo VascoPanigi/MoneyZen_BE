@@ -24,11 +24,8 @@ public class Transaction {
     @GeneratedValue
     @Setter(AccessLevel.NONE)
     private UUID id;
-
     private String name;
     private double amount;
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
     @Enumerated(EnumType.STRING)
     private TransactionRecurrence transactionRecurrence;
     private String description;
@@ -39,21 +36,24 @@ public class Transaction {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    @ManyToMany
-    @JoinTable(
-            name = "transaction_labels",
-            joinColumns = @JoinColumn(name = "transaction_id"),
-            inverseJoinColumns = @JoinColumn(name = "label_id")
-    )
-    private Set<Label> labels;
+    @ManyToOne
 
-    public Transaction(String name, double amount, TransactionType transactionType, TransactionRecurrence transactionRecurrence, String description, LocalDateTime date) {
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "transaction_labels",
+//            joinColumns = @JoinColumn(name = "transaction_id"),
+//            inverseJoinColumns = @JoinColumn(name = "label_id")
+//    )
+//    private Set<Label> labels;
+
+    public Transaction(String name, double amount, TransactionRecurrence transactionRecurrence, String description, LocalDateTime date) {
         this.name = name;
         this.amount = amount;
-        this.transactionType = transactionType;
         this.transactionRecurrence = transactionRecurrence;
         this.description = description;
         this.date = date;
-
     }
 }
