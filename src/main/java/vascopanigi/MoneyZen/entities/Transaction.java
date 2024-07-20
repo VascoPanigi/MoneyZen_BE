@@ -9,6 +9,7 @@ import lombok.Setter;
 import vascopanigi.MoneyZen.enums.transaction.TransactionRecurrence;
 import vascopanigi.MoneyZen.enums.transaction.TransactionType;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionRecurrence transactionRecurrence;
     private String description;
-    private Date date;
+    private LocalDateTime date;
 
     @JsonBackReference
     @ManyToOne
@@ -46,16 +47,13 @@ public class Transaction {
     )
     private Set<Label> labels;
 
-    public Transaction(String name, double amount, TransactionType transactionType, TransactionRecurrence transactionRecurrence, String description, Date date, Wallet wallet, Set<Label> labels) {
+    public Transaction(String name, double amount, TransactionType transactionType, TransactionRecurrence transactionRecurrence, String description, LocalDateTime date) {
         this.name = name;
         this.amount = amount;
         this.transactionType = transactionType;
         this.transactionRecurrence = transactionRecurrence;
         this.description = description;
         this.date = date;
-        this.wallet = wallet;
-        this.labels = labels;
-    }
 
-    
+    }
 }
