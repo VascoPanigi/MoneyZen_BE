@@ -34,11 +34,9 @@ public class TransactionService {
 //    @Autowired
 //    private LabelRepository labelRepository;
 
-
-    public Transaction saveTransaction(NewTransactionDTO body, User currentUser){
-
+    public Transaction saveTransaction(NewTransactionDTO body, User currentUser, UUID walletId){
         Category transactionCategory = categoryService.findByName(body.categoryName());
-        Wallet transactionWallet = walletRepository.findById(body.walletId()).orElseThrow(() -> new NotFoundException("Wallet with id " + body.walletId() + " not found!"));
+        Wallet transactionWallet = walletRepository.findById(walletId).orElseThrow(() -> new NotFoundException("Wallet with id " + walletId + " not found!"));
         if (transactionWallet instanceof PersonalWallet) {
             if (!((PersonalWallet) transactionWallet).getUser().getId().equals(currentUser.getId())) {
                 throw new UnauthorizedException("You are not authorized to add transactions to this wallet");
@@ -48,19 +46,11 @@ public class TransactionService {
                 throw new UnauthorizedException("You are not authorized to add transactions to this wallet");
             }
         }
+        transactionWallet.setBalance(transactionWallet.getBalance() + body.amount());
 
         Transaction newTransaction = new Transaction(body.name(), body.amount(), convertTransactionRecurrenceFromStrToEnum(body.transactionRecurrence()), body.description(), body.date(), transactionWallet, transactionCategory);
         return this.transactionRepository.save(newTransaction);
-
     }
-
-//    public static TransactionType convertTransactionTypeFromStrToEnum(String transactionType) {
-//        try {
-//            return TransactionType.valueOf(transactionType.toUpperCase());
-//        } catch (IllegalArgumentException e) {
-//            throw new BadRequestException("Invalid transaction type: " + transactionType + ". Choose between INCOME, OUTCOME. Exception " + e);
-//        }
-//    }
 
     public static TransactionRecurrence convertTransactionRecurrenceFromStrToEnum(String transactionRecurrence) {
         try {

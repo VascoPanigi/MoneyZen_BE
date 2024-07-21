@@ -19,8 +19,6 @@ public record NewTransactionDTO (
         String transactionRecurrence,
         String description,
         @NotNull
-        UUID walletId,
-        @NotNull
         String categoryName,
         @NotNull
         LocalDateTime date
