@@ -30,22 +30,16 @@ public class TransactionService {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private WalletService walletService;
+
 
 //    @Autowired
 //    private LabelRepository labelRepository;
 
     public Transaction saveTransaction(NewTransactionDTO body, User currentUser, UUID walletId){
         Category transactionCategory = categoryService.findByName(body.categoryName());
-        Wallet transactionWallet = walletRepository.findById(walletId).orElseThrow(() -> new NotFoundException("Wallet with id " + walletId + " not found!"));
-        if (transactionWallet instanceof PersonalWallet) {
-            if (!((PersonalWallet) transactionWallet).getUser().getId().equals(currentUser.getId())) {
-                throw new UnauthorizedException("You are not authorized to add transactions to this wallet");
-            }
-        } else if (transactionWallet instanceof SharedWallet) {
-            if (!((SharedWallet) transactionWallet).getUsers().contains(currentUser)) {
-                throw new UnauthorizedException("You are not authorized to add transactions to this wallet");
-            }
-        }
+        Wallet transactionWallet = this.walletService.getWalletById(walletId, currentUser);
         transactionWallet.setBalance(transactionWallet.getBalance() + body.amount());
 
         Transaction newTransaction = new Transaction(body.name(), body.amount(), convertTransactionRecurrenceFromStrToEnum(body.transactionRecurrence()), body.description(), body.date(), transactionWallet, transactionCategory);
@@ -58,5 +52,17 @@ public class TransactionService {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid transaction recurrence: " + transactionRecurrence + ". Choose between DAILY, WEEKLY, MONTHLY, YEARLY, NONE. Exception " + e);
         }
+    }
+
+    public Transaction findById(UUID id) {
+        return this.transactionRepository.findById(id).orElseThrow(() -> new NotFoundException("Transaction with id: " + id +" not found."));
+    }
+
+
+    public void findByIdAndDelete(UUID transactionId, User currentUser) {
+        Transaction found = this.findById(transactionId);
+        Wallet userWallet = this.walletService.getWalletById(found.getWallet().getId(), currentUser);
+        userWallet.setBalance(userWallet.getBalance() - found.getAmount());
+        this.transactionRepository.delete(found);
     }
 }

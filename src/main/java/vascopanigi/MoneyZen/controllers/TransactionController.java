@@ -34,5 +34,9 @@ public class TransactionController {
         return new NewTransactionResponseDTO(this.transactionService.saveTransaction(newTransactionDTO, currentUser, walletId).getId());
     }
 
+    @DeleteMapping("/{transactionId}")
+    public void deleteTransaction(@PathVariable UUID transactionId, @AuthenticationPrincipal User currentAuthenticatedUser) {
+        transactionService.findByIdAndDelete(transactionId, currentAuthenticatedUser);
+    }
 
 }
