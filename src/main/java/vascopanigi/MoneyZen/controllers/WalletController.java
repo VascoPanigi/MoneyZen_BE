@@ -50,8 +50,13 @@ public class WalletController {
         return this.walletService.getWalletById(walletId, currentUser);
     }
 
+//    @GetMapping("/my-wallets")
+//    public List<WalletDTO> getAllUserWallets(@AuthenticationPrincipal User currentUser) {
+//        return walletService.getAllUserWallets(currentUser);
+//    }
+
     @GetMapping("/my-wallets")
-    public List<WalletDTO> getAllUserWallets(@AuthenticationPrincipal User currentUser) {
-        return walletService.getAllUserWallets(currentUser);
+    public List<Wallet> getAllUserWallets(@AuthenticationPrincipal User currentUser) {
+        return walletService.findAllWalletsByUserId(currentUser.getId());
     }
 }

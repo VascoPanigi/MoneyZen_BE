@@ -69,45 +69,56 @@ public class WalletService {
         return wallet;
     }
 
-    public List<WalletDTO> getAllUserWallets(User currentUser) {
-        List<WalletDTO> walletDTOs = new ArrayList<>();
+    public List<Wallet> findAllWalletsByUserId(UUID userId) {
+        List<PersonalWallet> personalWallets = walletRepository.findPersonalWalletsByUserId(userId);
+        List<SharedWallet> sharedWallets = walletRepository.findSharedWalletsByUserId(userId);
 
-        // Fetch personal wallets
-        List<PersonalWallet> personalWallets = personalWalletRepository.findByUser(currentUser);
-        for (PersonalWallet personalWallet : personalWallets) {
-            PersonalWalletDTO dto = new PersonalWalletDTO(
-                    personalWallet.getId(),
-                    personalWallet.getName(),
-                    personalWallet.getBalance()
-            );
-            walletDTOs.add(dto);
-        }
+        List<Wallet> allWallets = new ArrayList<>();
+        allWallets.addAll(personalWallets);
+        allWallets.addAll(sharedWallets);
 
-        // Fetch shared wallets
-        List<SharedWallet> sharedWallets = sharedWalletRepository.findByUsersContains(currentUser);
-        for (SharedWallet sharedWallet : sharedWallets) {
-            Set<UserDTO> userDTOs = sharedWallet.getUsers().stream().map(user ->
-                    new UserDTO(
-                            user.getId(),
-                            user.getName(),
-                            user.getSurname(),
-                            user.getUsername(),
-                            user.getEmail(),
-                            user.getAvatarURL()
-                    )
-            ).collect(Collectors.toSet());
-
-            SharedWalletDTO dto = new SharedWalletDTO(
-                    sharedWallet.getId(),
-                    sharedWallet.getName(),
-                    sharedWallet.getBalance(),
-                    userDTOs
-            );
-            walletDTOs.add(dto);
-        }
-
-        return walletDTOs;
+        return allWallets;
     }
+
+//    public List<WalletDTO> getAllUserWallets(User currentUser) {
+//        List<WalletDTO> walletDTOs = new ArrayList<>();
+//
+//        // Fetch personal wallets
+//        List<PersonalWallet> personalWallets = personalWalletRepository.findByUser(currentUser);
+//        for (PersonalWallet personalWallet : personalWallets) {
+//            PersonalWalletDTO dto = new PersonalWalletDTO(
+//                    personalWallet.getId(),
+//                    personalWallet.getName(),
+//                    personalWallet.getBalance()
+//            );
+//            walletDTOs.add(dto);
+//        }
+//
+//        // Fetch shared wallets
+//        List<SharedWallet> sharedWallets = sharedWalletRepository.findByUsersContains(currentUser);
+//        for (SharedWallet sharedWallet : sharedWallets) {
+//            Set<UserDTO> userDTOs = sharedWallet.getUsers().stream().map(user ->
+//                    new UserDTO(
+//                            user.getId(),
+//                            user.getName(),
+//                            user.getSurname(),
+//                            user.getUsername(),
+//                            user.getEmail(),
+//                            user.getAvatarURL()
+//                    )
+//            ).collect(Collectors.toSet());
+//
+//            SharedWalletDTO dto = new SharedWalletDTO(
+//                    sharedWallet.getId(),
+//                    sharedWallet.getName(),
+//                    sharedWallet.getBalance(),
+//                    userDTOs
+//            );
+//            walletDTOs.add(dto);
+//        }
+//
+//        return walletDTOs;
+//    }
 
 
 }

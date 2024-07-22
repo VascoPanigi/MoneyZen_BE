@@ -44,11 +44,15 @@ public class UserService {
     }
 
     public User saveUser(NewUserDTO body){
-        this.userRepository.findByEmail(body.email()).ifPresent(utente -> {
+        this.userRepository.findByEmail(body.email()).ifPresent(user -> {
             throw new BadRequestException("The user with email: " + body.email() + ", already exist.");
         });
+        this.userRepository.findByUsername(body.username()).ifPresent(user -> {
+            throw new BadRequestException("The user with username: " + body.username() + ", already exist.");
+        });
+
         User user = new User(body.name(), body.surname(), body.username(), body.email(), bCrypt.encode(body.password()));
-//        (String name, String surname, String username, String email, String password)
+
         user.setAvatarURL("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
         List<Role> roleList = new ArrayList<>();
         Role userRole = roleService.findByRoleName("USER");
