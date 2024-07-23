@@ -80,6 +80,8 @@ public class WalletService {
         return allWallets;
     }
 
+//    comm
+
 //    public List<WalletDTO> getAllUserWallets(User currentUser) {
 //        List<WalletDTO> walletDTOs = new ArrayList<>();
 //
