@@ -3,8 +3,11 @@ package vascopanigi.MoneyZen.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vascopanigi.MoneyZen.entities.Category;
+import vascopanigi.MoneyZen.entities.User;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.repositories.CategoryRepository;
+
+import java.util.List;
 
 @Service
 public class CategoryService {
@@ -14,4 +17,10 @@ public class CategoryService {
     public Category findByName(String name){
            return categoryRepository.findByName(name).orElseThrow(()-> new NotFoundException("Category " + name + " not found!"));
     }
+
+    public List<Category> getAllCategories(){
+        return categoryRepository.findAll();
+    }
+
+//    public Category saveCategory(NewCategoryDTO body)
 }
