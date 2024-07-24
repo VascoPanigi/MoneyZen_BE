@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import vascopanigi.MoneyZen.entities.User;
 import vascopanigi.MoneyZen.entities.Wallet;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
+import vascopanigi.MoneyZen.payloads.wallet.AddUserToSharedWalletDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletResponseDTO;
 import vascopanigi.MoneyZen.payloads.wallet.WalletDTO;
@@ -58,5 +59,11 @@ public class WalletController {
     @GetMapping("/my-wallets")
     public List<Wallet> getAllUserWallets(@AuthenticationPrincipal User currentUser) {
         return walletService.findAllWalletsByUserId(currentUser.getId());
+    }
+
+    //post to add a user to the shared wallet list
+    @PatchMapping("/shared-wallets/users")
+    public Wallet addUserToSharedWallet(@RequestBody AddUserToSharedWalletDTO body, @AuthenticationPrincipal User currentUser){
+        return this.walletService.addUserToSharedWallet(body, currentUser);
     }
 }

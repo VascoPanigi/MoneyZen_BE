@@ -10,10 +10,7 @@ import vascopanigi.MoneyZen.entities.Wallet;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.exceptions.UnauthorizedException;
 import vascopanigi.MoneyZen.payloads.user.UserDTO;
-import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
-import vascopanigi.MoneyZen.payloads.wallet.PersonalWalletDTO;
-import vascopanigi.MoneyZen.payloads.wallet.SharedWalletDTO;
-import vascopanigi.MoneyZen.payloads.wallet.WalletDTO;
+import vascopanigi.MoneyZen.payloads.wallet.*;
 import vascopanigi.MoneyZen.repositories.PersonalWalletRepository;
 import vascopanigi.MoneyZen.repositories.SharedWalletRepository;
 import vascopanigi.MoneyZen.repositories.WalletRepository;
@@ -80,7 +77,18 @@ public class WalletService {
         return allWallets;
     }
 
-//    comm
+    public SharedWallet addUserToSharedWallet(AddUserToSharedWalletDTO body, User currentUser){
+        SharedWallet requestedWallet = this.sharedWalletRepository.findById(body.walletId()).orElseThrow(()-> new NotFoundException("Wallet with Id: " + body.walletId() + " not found."));
+        Set<User> walletUsers = requestedWallet.getUsers();
+        if(walletUsers.stream().anyMatch(user -> user.getId().equals(currentUser.getId()))){
+            //meglio dare un errore generico per evitare possibili falle di sicurezza in cui un utente malintenzionato voglia scoprire se qualcuno
+            //fa parte di uno shared wallet per secondi fini
+            throw new UnauthorizedException("Operation not valid.");
+        }
+        walletUsers.add(currentUser);
+        requestedWallet.setUsers(walletUsers);
+        return sharedWalletRepository.save(requestedWallet);
+    }
 
 //    public List<WalletDTO> getAllUserWallets(User currentUser) {
 //        List<WalletDTO> walletDTOs = new ArrayList<>();
