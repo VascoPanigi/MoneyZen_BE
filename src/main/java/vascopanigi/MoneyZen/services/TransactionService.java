@@ -40,7 +40,13 @@ public class TransactionService {
     public Transaction saveTransaction(NewTransactionDTO body, User currentUser, UUID walletId){
         Category transactionCategory = categoryService.findByName(body.categoryName());
         Wallet transactionWallet = this.walletService.getWalletById(walletId, currentUser);
+        if(transactionCategory.getTransactionType().equals(TransactionType.INCOME)){
         transactionWallet.setBalance(transactionWallet.getBalance() + body.amount());
+            System.out.println("Income adds credit to your balance!");
+        }else{
+            transactionWallet.setBalance(transactionWallet.getBalance() - body.amount());
+            System.out.println("With an outcome expense you lose money");
+        }
 
         Transaction newTransaction = new Transaction(body.name(), body.amount(), convertTransactionRecurrenceFromStrToEnum(body.transactionRecurrence()), body.description(), body.date(), transactionWallet, transactionCategory);
         return this.transactionRepository.save(newTransaction);
