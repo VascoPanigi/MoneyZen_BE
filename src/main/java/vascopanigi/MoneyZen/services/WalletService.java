@@ -1,6 +1,5 @@
 package vascopanigi.MoneyZen.services;
 
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

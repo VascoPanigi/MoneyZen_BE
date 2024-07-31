@@ -13,10 +13,8 @@ import vascopanigi.MoneyZen.enums.transaction.TransactionRecurrence;
 import vascopanigi.MoneyZen.enums.transaction.TransactionType;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
-import vascopanigi.MoneyZen.exceptions.UnauthorizedException;
 import vascopanigi.MoneyZen.payloads.transaction.NewTransactionDTO;
 //import vascopanigi.MoneyZen.repositories.LabelRepository;
-import vascopanigi.MoneyZen.repositories.CategoryRepository;
 import vascopanigi.MoneyZen.repositories.TransactionRepository;
 import vascopanigi.MoneyZen.repositories.WalletRepository;
 
@@ -37,7 +35,6 @@ public class TransactionService {
 
     @Autowired
     private WalletService walletService;
-
 
 //    @Autowired
 //    private LabelRepository labelRepository;
@@ -90,20 +87,6 @@ public class TransactionService {
                                                       User currentUser) {
 
         Wallet wallet = this.walletService.getWalletById(walletId, currentUser);
-//        Wallet wallet = walletRepository.findById(walletId)
-//                .orElseThrow(() -> new NotFoundException("Wallet not found."));
-//
-//        if (wallet instanceof PersonalWallet personalWallet) {
-//            if (!personalWallet.getUser().getId().equals(currentUser.getId())) {
-//                throw new UnauthorizedException("You are not authorized to view this wallet.");
-//            }
-//        } else if (wallet instanceof SharedWallet sharedWallet) {
-//            boolean isMember = sharedWallet.getUsers().stream()
-//                    .anyMatch(user -> user.getId().equals(currentUser.getId()));
-//            if (!isMember) {
-//                throw new UnauthorizedException("You are not authorized to view this wallet.");
-//            }
-//        }
 
         if (pageSize > 100) pageSize = 100;
 
