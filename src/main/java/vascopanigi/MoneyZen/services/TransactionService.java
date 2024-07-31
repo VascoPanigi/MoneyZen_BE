@@ -1,7 +1,12 @@
 package vascopanigi.MoneyZen.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 //import vascopanigi.MoneyZen.entities.Label;
 import vascopanigi.MoneyZen.entities.*;
 import vascopanigi.MoneyZen.enums.transaction.TransactionRecurrence;
@@ -16,9 +21,9 @@ import vascopanigi.MoneyZen.repositories.TransactionRepository;
 import vascopanigi.MoneyZen.repositories.WalletRepository;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class TransactionService {
@@ -70,5 +75,58 @@ public class TransactionService {
         Wallet userWallet = this.walletService.getWalletById(found.getWallet().getId(), currentUser);
         userWallet.setBalance(userWallet.getBalance() - found.getAmount());
         this.transactionRepository.delete(found);
+    }
+
+    public Page<Transaction> findTransactionsByWallet(UUID walletId,
+                                                      int pageNumber,
+                                                      int pageSize,
+                                                      String sortedBy,
+                                                      String transactionType,
+                                                      String sortOrder,
+                                                      LocalDateTime startDate,
+                                                      LocalDateTime endDate,
+                                                      Double minAmount,
+                                                      Double maxAmount,
+                                                      User currentUser) {
+
+        Wallet wallet = this.walletService.getWalletById(walletId, currentUser);
+//        Wallet wallet = walletRepository.findById(walletId)
+//                .orElseThrow(() -> new NotFoundException("Wallet not found."));
+//
+//        if (wallet instanceof PersonalWallet personalWallet) {
+//            if (!personalWallet.getUser().getId().equals(currentUser.getId())) {
+//                throw new UnauthorizedException("You are not authorized to view this wallet.");
+//            }
+//        } else if (wallet instanceof SharedWallet sharedWallet) {
+//            boolean isMember = sharedWallet.getUsers().stream()
+//                    .anyMatch(user -> user.getId().equals(currentUser.getId()));
+//            if (!isMember) {
+//                throw new UnauthorizedException("You are not authorized to view this wallet.");
+//            }
+//        }
+
+        if (pageSize > 100) pageSize = 100;
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortedBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        return transactionRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.equal(root.get("wallet").get("id"), walletId));
+
+            if (transactionType != null) {
+                TransactionType type = TransactionType.valueOf(transactionType.toUpperCase());
+                predicates.add(criteriaBuilder.equal(root.get("transactionType"), type));
+            }
+            if (startDate != null && endDate != null) {
+                predicates.add(criteriaBuilder.between(root.get("date"), startDate, endDate));
+            }
+            if (minAmount != null && maxAmount != null) {
+                predicates.add(criteriaBuilder.between(root.get("amount"), minAmount, maxAmount));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
     }
 }

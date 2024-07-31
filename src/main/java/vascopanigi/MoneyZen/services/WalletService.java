@@ -1,19 +1,16 @@
 package vascopanigi.MoneyZen.services;
 
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import vascopanigi.MoneyZen.entities.PersonalWallet;
-import vascopanigi.MoneyZen.entities.SharedWallet;
-import vascopanigi.MoneyZen.entities.User;
-import vascopanigi.MoneyZen.entities.Wallet;
+import vascopanigi.MoneyZen.entities.*;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.exceptions.UnauthorizedException;
-import vascopanigi.MoneyZen.payloads.user.UserDTO;
 import vascopanigi.MoneyZen.payloads.wallet.*;
-import vascopanigi.MoneyZen.repositories.PersonalWalletRepository;
-import vascopanigi.MoneyZen.repositories.SharedWalletRepository;
-import vascopanigi.MoneyZen.repositories.WalletRepository;
+import vascopanigi.MoneyZen.repositories.*;
 import vascopanigi.MoneyZen.security.JWTTools;
 
 import java.util.*;
@@ -32,6 +29,11 @@ public class WalletService {
 
     @Autowired
     private PersonalWalletRepository personalWalletRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
 
     public PersonalWallet savePersonalWallet(NewWalletDTO body, @AuthenticationPrincipal User currentUser){
         PersonalWallet personalWallet = new PersonalWallet(body.name(), currentUser);
@@ -90,45 +92,48 @@ public class WalletService {
         return sharedWalletRepository.save(requestedWallet);
     }
 
-//    public List<WalletDTO> getAllUserWallets(User currentUser) {
-//        List<WalletDTO> walletDTOs = new ArrayList<>();
-//
-//        // Fetch personal wallets
-//        List<PersonalWallet> personalWallets = personalWalletRepository.findByUser(currentUser);
-//        for (PersonalWallet personalWallet : personalWallets) {
-//            PersonalWalletDTO dto = new PersonalWalletDTO(
-//                    personalWallet.getId(),
-//                    personalWallet.getName(),
-//                    personalWallet.getBalance()
-//            );
-//            walletDTOs.add(dto);
-//        }
-//
-//        // Fetch shared wallets
-//        List<SharedWallet> sharedWallets = sharedWalletRepository.findByUsersContains(currentUser);
-//        for (SharedWallet sharedWallet : sharedWallets) {
-//            Set<UserDTO> userDTOs = sharedWallet.getUsers().stream().map(user ->
-//                    new UserDTO(
-//                            user.getId(),
-//                            user.getName(),
-//                            user.getSurname(),
-//                            user.getUsername(),
-//                            user.getEmail(),
-//                            user.getAvatarURL()
-//                    )
-//            ).collect(Collectors.toSet());
-//
-//            SharedWalletDTO dto = new SharedWalletDTO(
-//                    sharedWallet.getId(),
-//                    sharedWallet.getName(),
-//                    sharedWallet.getBalance(),
-//                    userDTOs
-//            );
-//            walletDTOs.add(dto);
-//        }
-//
-//        return walletDTOs;
-//    }
+    public Wallet findById(UUID id) {
+        return this.walletRepository.findById(id).orElseThrow(() -> new NotFoundException("Wallet with id: " + id +" not found."));
+    }
 
+    public void findByIdAndDelete(UUID walletId, User currentUser) {
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new NotFoundException("Wallet not found."));
 
+        if (wallet instanceof PersonalWallet personalWallet) {
+            if (!personalWallet.getUser().getId().equals(currentUser.getId())) {
+                throw new UnauthorizedException("You are not authorized to view this wallet.");
+            } else {
+                Set<PersonalWallet> usersPersonalWallets = personalWallet.getUser().getPersonalWallets();
+                usersPersonalWallets.removeIf(singleWallet -> singleWallet.getId().equals(walletId));
+                logger.info("Personal wallet removed from user's collection: " + walletId);
+            }
+        } else if (wallet instanceof SharedWallet sharedWallet) {
+            boolean isMember = sharedWallet.getUsers().stream()
+                    .anyMatch(user -> user.getId().equals(currentUser.getId()));
+            if (!isMember) {
+                throw new UnauthorizedException("You are not authorized to view this wallet.");
+            }
+            Set<SharedWallet> usersSharedWallets = sharedWallet.getUsers().stream()
+                    .flatMap(user -> user.getSharedWallets().stream())
+                    .collect(Collectors.toSet());
+            usersSharedWallets.removeIf(singleWallet -> singleWallet.getId().equals(walletId));
+            logger.info("Shared wallet removed from user's collection: " + walletId);
+        }
+
+        // Delete associated transactions
+        if (wallet.getTransactions() != null && !wallet.getTransactions().isEmpty()) {
+            logger.info("Deleting associated transactions for wallet: " + walletId);
+            transactionRepository.deleteAll(wallet.getTransactions());
+        }
+
+        if (wallet instanceof PersonalWallet) {
+            personalWalletRepository.delete((PersonalWallet) wallet);
+        } else if (wallet instanceof SharedWallet) {
+            sharedWalletRepository.delete((SharedWallet) wallet);
+        }
+
+        // Log the wallet deletion
+        logger.info("Wallet deleted: " + walletId);
+    }
 }

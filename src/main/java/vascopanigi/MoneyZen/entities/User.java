@@ -47,7 +47,7 @@ public class User implements UserDetails {
     private List<Role> rolesList;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<PersonalWallet> personalWallets;
 
     @JsonBackReference

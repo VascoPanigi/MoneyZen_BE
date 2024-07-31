@@ -66,4 +66,9 @@ public class WalletController {
     public Wallet addUserToSharedWallet(@RequestBody AddUserToSharedWalletDTO body, @AuthenticationPrincipal User currentUser){
         return this.walletService.addUserToSharedWallet(body, currentUser);
     }
+
+    @DeleteMapping("/{walletId}")
+    public void deleteSpecificWallet(@PathVariable UUID walletId, @AuthenticationPrincipal User currentUser){
+         walletService.findByIdAndDelete(walletId, currentUser);
+    }
 }

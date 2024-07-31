@@ -26,7 +26,7 @@ public abstract class Wallet {
     private double balance;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
     public Wallet(String name) {

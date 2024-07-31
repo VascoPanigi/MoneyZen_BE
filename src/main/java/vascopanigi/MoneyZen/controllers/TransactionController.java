@@ -2,6 +2,7 @@ package vascopanigi.MoneyZen.controllers;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import vascopanigi.MoneyZen.payloads.transaction.NewTransactionDTO;
 import vascopanigi.MoneyZen.payloads.transaction.NewTransactionResponseDTO;
 import vascopanigi.MoneyZen.services.TransactionService;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +39,23 @@ public class TransactionController {
     @DeleteMapping("/{transactionId}")
     public void deleteTransaction(@PathVariable UUID transactionId, @AuthenticationPrincipal User currentAuthenticatedUser) {
         transactionService.findByIdAndDelete(transactionId, currentAuthenticatedUser);
+    }
+
+    @GetMapping("/wallet/{walletId}")
+    public Page<Transaction> getTransactionsByWallet(
+            @PathVariable UUID walletId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "date") String sortedBy,
+            @RequestParam(required = false) String transactionType,
+            @RequestParam(defaultValue = "DESC") String sortOrder,
+            @RequestParam(required = false) LocalDateTime startDateTime,
+            @RequestParam(required = false) LocalDateTime endDateTime,
+            @RequestParam(required = false) Double minAmount,
+            @RequestParam(required = false) Double maxAmount,
+            @AuthenticationPrincipal User currentUser) {
+
+        return transactionService.findTransactionsByWallet(walletId, pageNumber, pageSize, sortedBy, transactionType, sortOrder, startDateTime, endDateTime, minAmount, maxAmount, currentUser);
     }
 
 }
