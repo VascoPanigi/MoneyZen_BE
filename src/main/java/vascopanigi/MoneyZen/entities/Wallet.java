@@ -1,5 +1,6 @@
 package vascopanigi.MoneyZen.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,9 +25,10 @@ public abstract class Wallet {
 
     private String name;
     private double balance;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
+// Initially the default behaviour I imagined was to have a bilateral connection between transactions and wallets
+//    @JsonManagedReference
+@JsonIgnore
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true     )
     private List<Transaction> transactions;
 
     public Wallet(String name) {
