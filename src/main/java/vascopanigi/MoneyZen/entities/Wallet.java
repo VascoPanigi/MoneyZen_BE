@@ -25,6 +25,7 @@ public abstract class Wallet {
 
     private String name;
     private double balance;
+    private boolean isShared;
 // Initially the default behaviour I imagined was to have a bilateral connection between transactions and wallets
 //    @JsonManagedReference
 @JsonIgnore
@@ -34,5 +35,6 @@ public abstract class Wallet {
     public Wallet(String name) {
         this.name = name;
         this.balance = 0;
+
     }
 }

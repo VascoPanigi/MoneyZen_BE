@@ -2,6 +2,7 @@ package vascopanigi.MoneyZen.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -50,6 +51,17 @@ public class WalletController {
     public Wallet getSpecificWallet(@PathVariable UUID walletId, @AuthenticationPrincipal User currentUser){
         return this.walletService.getWalletById(walletId, currentUser);
     }
+
+
+    @PatchMapping("/{walletId}/name")
+    public ResponseEntity<Wallet> updateWalletName(
+            @PathVariable UUID walletId,
+            @RequestBody NewWalletDTO body,
+            @AuthenticationPrincipal User currentUser) {
+        Wallet updatedWallet = walletService.updateWalletName(walletId, body, currentUser);
+        return ResponseEntity.ok(updatedWallet);
+    }
+
 
 //    @GetMapping("/my-wallets")
 //    public List<WalletDTO> getAllUserWallets(@AuthenticationPrincipal User currentUser) {

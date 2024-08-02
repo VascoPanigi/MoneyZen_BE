@@ -25,5 +25,6 @@ public class PersonalWallet extends Wallet{
     public PersonalWallet(String name, User user) {
         super(name);
         this.user = user;
+        this.setShared(false);
     }
 }

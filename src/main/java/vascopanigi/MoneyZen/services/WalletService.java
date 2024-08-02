@@ -135,4 +135,10 @@ public class WalletService {
         // Log the wallet deletion
         logger.info("Wallet deleted: " + walletId);
     }
+
+    public Wallet updateWalletName(UUID walletId, NewWalletDTO body, User currentUser) {
+        Wallet wallet = this.getWalletById(walletId, currentUser);
+        wallet.setName(body.name());
+        return walletRepository.save(wallet);
+    }
 }

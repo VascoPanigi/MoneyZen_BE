@@ -26,5 +26,6 @@ public class SharedWallet extends Wallet {
 
     public SharedWallet(String name) {
         super(name);
+        this.setShared(true);
     }
 }
