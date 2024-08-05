@@ -45,7 +45,7 @@ public class TransactionController {
     public Page<Transaction> getTransactionsByWallet(
             @PathVariable UUID walletId,
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "15") int pageSize,
             @RequestParam(defaultValue = "date") String sortedBy,
             @RequestParam(required = false) String transactionType,
             @RequestParam(defaultValue = "DESC") String sortOrder,
@@ -53,9 +53,10 @@ public class TransactionController {
             @RequestParam(required = false) LocalDateTime endDateTime,
             @RequestParam(required = false) Double minAmount,
             @RequestParam(required = false) Double maxAmount,
+            @RequestParam(required = false) String name,
             @AuthenticationPrincipal User currentUser) {
 
-        return transactionService.findTransactionsByWallet(walletId, pageNumber, pageSize, sortedBy, transactionType, sortOrder, startDateTime, endDateTime, minAmount, maxAmount, currentUser);
+        return transactionService.findTransactionsByWallet(walletId, pageNumber, pageSize, sortedBy, transactionType, sortOrder, startDateTime, endDateTime, minAmount, maxAmount,name, currentUser);
     }
 
 }

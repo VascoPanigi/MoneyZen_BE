@@ -84,6 +84,7 @@ public class TransactionService {
                                                       LocalDateTime endDate,
                                                       Double minAmount,
                                                       Double maxAmount,
+                                                      String name,
                                                       User currentUser) {
 
         Wallet wallet = this.walletService.getWalletById(walletId, currentUser);
@@ -107,6 +108,9 @@ public class TransactionService {
             }
             if (minAmount != null && maxAmount != null) {
                 predicates.add(criteriaBuilder.between(root.get("amount"), minAmount, maxAmount));
+            }
+            if (name != null && !name.isEmpty()) { // Check if name parameter is not null or empty
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + name + "%"));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
