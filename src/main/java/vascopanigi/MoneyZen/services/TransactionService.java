@@ -1,5 +1,6 @@
 package vascopanigi.MoneyZen.services;
 
+import jakarta.persistence.criteria.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -100,14 +101,27 @@ public class TransactionService {
             predicates.add(criteriaBuilder.equal(root.get("wallet").get("id"), walletId));
 
             if (transactionType != null) {
+                Join<Transaction, Category> categoryJoin = root.join("category");
                 TransactionType type = TransactionType.valueOf(transactionType.toUpperCase());
-                predicates.add(criteriaBuilder.equal(root.get("transactionType"), type));
+                predicates.add(criteriaBuilder.equal(categoryJoin.get("transactionType"), type));
             }
             if (startDate != null && endDate != null) {
                 predicates.add(criteriaBuilder.between(root.get("date"), startDate, endDate));
             }
+            if (startDate != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("date"), startDate));
+            }
+            if (endDate != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("date"), endDate));
+            }
             if (minAmount != null && maxAmount != null) {
                 predicates.add(criteriaBuilder.between(root.get("amount"), minAmount, maxAmount));
+            }
+            if (minAmount != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("amount"), minAmount));
+            }
+            if (maxAmount != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), maxAmount));
             }
             if (name != null && !name.isEmpty()) { // Check if name parameter is not null or empty
                 predicates.add(criteriaBuilder.like(root.get("name"), "%" + name + "%"));
