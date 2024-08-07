@@ -11,6 +11,7 @@ import vascopanigi.MoneyZen.entities.User;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.payloads.transaction.NewTransactionDTO;
 import vascopanigi.MoneyZen.payloads.transaction.NewTransactionResponseDTO;
+import vascopanigi.MoneyZen.payloads.transaction.UpdateTransactionDTO;
 import vascopanigi.MoneyZen.services.TransactionService;
 
 import java.time.LocalDateTime;
@@ -59,4 +60,16 @@ public class TransactionController {
         return transactionService.findTransactionsByWallet(walletId, pageNumber, pageSize, sortedBy, transactionType, sortOrder, startDateTime, endDateTime, minAmount, maxAmount,name, currentUser);
     }
 
+    @PutMapping("/{transactionId}")
+    public Transaction updateTransaction(
+            @PathVariable UUID transactionId,
+            @RequestBody @Valid UpdateTransactionDTO updateTransactionDTO,
+            BindingResult validationResult,
+            @AuthenticationPrincipal User currentUser) {
+
+        if (validationResult.hasErrors()) {
+            throw new BadRequestException(validationResult.getAllErrors());
+        }
+        return transactionService.updateTransaction(transactionId, updateTransactionDTO, currentUser);
+    }
 }

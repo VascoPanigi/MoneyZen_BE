@@ -16,6 +16,7 @@ import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.payloads.transaction.NewTransactionDTO;
 //import vascopanigi.MoneyZen.repositories.LabelRepository;
+import vascopanigi.MoneyZen.payloads.transaction.UpdateTransactionDTO;
 import vascopanigi.MoneyZen.repositories.TransactionRepository;
 import vascopanigi.MoneyZen.repositories.WalletRepository;
 
@@ -129,5 +130,29 @@ public class TransactionService {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
+    }
+
+    public Transaction updateTransaction(UUID transactionId, UpdateTransactionDTO body, User currentUser) {
+        Transaction existingTransaction = findById(transactionId);
+
+        Wallet transactionWallet = this.walletService.getWalletById(existingTransaction.getWallet().getId(), currentUser);
+
+        Category transactionCategory = categoryService.findByName(body.categoryName());
+
+        double balanceAdjustment = body.amount() - existingTransaction.getAmount();
+        if (transactionCategory.getTransactionType().equals(TransactionType.INCOME)) {
+            transactionWallet.setBalance(transactionWallet.getBalance() + balanceAdjustment);
+        } else {
+            transactionWallet.setBalance(transactionWallet.getBalance() - balanceAdjustment);
+        }
+
+        existingTransaction.setName(body.name());
+        existingTransaction.setAmount(body.amount());
+        existingTransaction.setTransactionRecurrence(convertTransactionRecurrenceFromStrToEnum(body.transactionRecurrence()));
+        existingTransaction.setDescription(body.description());
+        existingTransaction.setDate(body.date());
+        existingTransaction.setCategory(transactionCategory);
+
+        return transactionRepository.save(existingTransaction);
     }
 }
