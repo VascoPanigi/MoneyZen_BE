@@ -1,5 +1,8 @@
 package vascopanigi.MoneyZen.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -7,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vascopanigi.MoneyZen.entities.Plan;
 import vascopanigi.MoneyZen.entities.Role;
 import vascopanigi.MoneyZen.entities.User;
@@ -18,6 +22,7 @@ import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.payloads.user.NewUserDTO;
 import vascopanigi.MoneyZen.repositories.UserRepository;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,6 +39,9 @@ public class UserService {
 
     @Autowired
     private PlanService planService;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     public User findById(UUID id) {
         return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
@@ -89,5 +97,16 @@ public class UserService {
     public void findByIdAndDelete(UUID id) {
         User found = this.findById(id);
         this.userRepository.delete(found);
+    }
+
+    //----- gestione della save nel cloud -----
+    public String uploadAvatarImage(MultipartFile file) throws IOException {
+        return (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+    }
+
+    public User patchNewAvatar(User currentUser, String avatarUrl) {
+        User authenticatedUser = findById(currentUser.getId());
+        authenticatedUser.setAvatarURL(avatarUrl);
+        return this.userRepository.save(authenticatedUser);
     }
 }
