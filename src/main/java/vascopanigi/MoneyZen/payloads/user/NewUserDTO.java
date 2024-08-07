@@ -21,7 +21,7 @@ public record NewUserDTO(
                          String name,
                          @NotEmpty(message = "surname field is required")
                          @Size(min = 3, max = 20, message = "surname field is required")
-                         String surname,
-                         UUID roleId)
+                         String surname
+                         )
 {
 }

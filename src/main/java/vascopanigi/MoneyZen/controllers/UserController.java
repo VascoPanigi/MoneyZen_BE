@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vascopanigi.MoneyZen.entities.User;
+import vascopanigi.MoneyZen.payloads.user.ModifyUserDTO;
 import vascopanigi.MoneyZen.payloads.user.NewUserDTO;
 import vascopanigi.MoneyZen.services.UserService;
 
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public User updateOwnProfile(@AuthenticationPrincipal User currentAuthenticatedUser, @RequestBody NewUserDTO payload) {
+    public User updateOwnProfile(@AuthenticationPrincipal User currentAuthenticatedUser, @RequestBody ModifyUserDTO payload) {
         return userService.findByIdAndUpdate(currentAuthenticatedUser.getId(), payload);
     }
 

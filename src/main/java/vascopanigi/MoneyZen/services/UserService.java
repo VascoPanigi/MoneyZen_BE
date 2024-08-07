@@ -19,6 +19,7 @@ import vascopanigi.MoneyZen.enums.plan.PlanDuration;
 import vascopanigi.MoneyZen.enums.plan.PlanType;
 import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
+import vascopanigi.MoneyZen.payloads.user.ModifyUserDTO;
 import vascopanigi.MoneyZen.payloads.user.NewUserDTO;
 import vascopanigi.MoneyZen.repositories.UserRepository;
 import vascopanigi.MoneyZen.utility.MailgunSender;
@@ -91,13 +92,12 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public User findByIdAndUpdate(UUID id, NewUserDTO payload) {
+    public User findByIdAndUpdate(UUID id, ModifyUserDTO payload) {
         User found = this.findById(id);
         found.setName(payload.name());
         found.setSurname(payload.surname());
         found.setUsername(payload.username());
         found.setEmail(payload.email());
-        found.setPassword(bCrypt.encode(payload.password()));
         return userRepository.save(found);
     }
 
