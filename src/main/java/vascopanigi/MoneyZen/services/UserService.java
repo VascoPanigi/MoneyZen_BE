@@ -21,6 +21,7 @@ import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.payloads.user.NewUserDTO;
 import vascopanigi.MoneyZen.repositories.UserRepository;
+import vascopanigi.MoneyZen.utility.MailgunSender;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,6 +43,9 @@ public class UserService {
 
     @Autowired
     private Cloudinary cloudinary;
+
+    @Autowired
+    private MailgunSender mailgunSender;
 
     public User findById(UUID id) {
         return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
@@ -75,7 +79,10 @@ public class UserService {
         System.out.println(userPlans);
         user.setUserPlans(userPlans);
         System.out.println(user);
-        return this.userRepository.save(user);
+
+        User saved = userRepository.save(user);
+        mailgunSender.sendRegistrationEmail(saved);
+        return saved;
     }
 
     public Page<User> getAllUsers(int pageNumber, int pageSize, String sortBy) {
