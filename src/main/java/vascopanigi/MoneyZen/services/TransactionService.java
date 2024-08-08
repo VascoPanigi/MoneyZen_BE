@@ -68,7 +68,6 @@ public class TransactionService {
         return this.transactionRepository.findById(id).orElseThrow(() -> new NotFoundException("Transaction with id: " + id +" not found."));
     }
 
-
     public void findByIdAndDelete(UUID transactionId, User currentUser) {
         Transaction found = this.findById(transactionId);
         Wallet userWallet = this.walletService.getWalletById(found.getWallet().getId(), currentUser);

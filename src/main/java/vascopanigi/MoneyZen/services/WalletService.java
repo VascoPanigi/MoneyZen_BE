@@ -101,23 +101,31 @@ public class WalletService {
 
         if (wallet instanceof PersonalWallet personalWallet) {
             if (!personalWallet.getUser().getId().equals(currentUser.getId())) {
-                throw new UnauthorizedException("You are not authorized to view this wallet.");
+                throw new UnauthorizedException("You are not authorized to delete this wallet.");
             } else {
                 Set<PersonalWallet> usersPersonalWallets = personalWallet.getUser().getPersonalWallets();
                 usersPersonalWallets.removeIf(singleWallet -> singleWallet.getId().equals(walletId));
-                logger.info("Personal wallet removed from user's collection: " + walletId);
+//                logger.info("Personal wallet removed from user's collection: " + walletId);
             }
         } else if (wallet instanceof SharedWallet sharedWallet) {
             boolean isMember = sharedWallet.getUsers().stream()
                     .anyMatch(user -> user.getId().equals(currentUser.getId()));
             if (!isMember) {
-                throw new UnauthorizedException("You are not authorized to view this wallet.");
+                throw new UnauthorizedException("You are not authorized to delete this wallet.");
             }
-            Set<SharedWallet> usersSharedWallets = sharedWallet.getUsers().stream()
-                    .flatMap(user -> user.getSharedWallets().stream())
-                    .collect(Collectors.toSet());
-            usersSharedWallets.removeIf(singleWallet -> singleWallet.getId().equals(walletId));
-            logger.info("Shared wallet removed from user's collection: " + walletId);
+
+            // Delete shared wallet from all users' sharedWallets collections ----- later on insert authorities
+            sharedWallet.getUsers().forEach(user -> {
+                Set<SharedWallet> userSharedWallets = user.getSharedWallets();
+                userSharedWallets.removeIf(singleWallet -> singleWallet.getId().equals(walletId));
+                user.setSharedWallets(userSharedWallets);
+            });
+
+            // Ensure wallet is removed from the current user's collection
+            currentUser.setSharedWallets(currentUser.getSharedWallets().stream()
+                    .filter(wallet1 -> !wallet1.getId().equals(walletId))
+                    .collect(Collectors.toSet()));
+//            logger.info("Shared wallet removed from all associated users' collections: " + walletId);
         }
 
         // Delete associated transactions
@@ -126,13 +134,13 @@ public class WalletService {
             transactionRepository.deleteAll(wallet.getTransactions());
         }
 
+        // Delete the wallet from the repository
         if (wallet instanceof PersonalWallet) {
             personalWalletRepository.delete((PersonalWallet) wallet);
         } else if (wallet instanceof SharedWallet) {
             sharedWalletRepository.delete((SharedWallet) wallet);
         }
 
-        // Log the wallet deletion
         logger.info("Wallet deleted: " + walletId);
     }
 

@@ -13,7 +13,6 @@ import vascopanigi.MoneyZen.exceptions.BadRequestException;
 import vascopanigi.MoneyZen.payloads.wallet.AddUserToSharedWalletDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletDTO;
 import vascopanigi.MoneyZen.payloads.wallet.NewWalletResponseDTO;
-import vascopanigi.MoneyZen.payloads.wallet.WalletDTO;
 import vascopanigi.MoneyZen.services.WalletService;
 
 import java.util.List;
@@ -61,12 +60,6 @@ public class WalletController {
         Wallet updatedWallet = walletService.updateWalletName(walletId, body, currentUser);
         return ResponseEntity.ok(updatedWallet);
     }
-
-
-//    @GetMapping("/my-wallets")
-//    public List<WalletDTO> getAllUserWallets(@AuthenticationPrincipal User currentUser) {
-//        return walletService.getAllUserWallets(currentUser);
-//    }
 
     @GetMapping("/my-wallets")
     public List<Wallet> getAllUserWallets(@AuthenticationPrincipal User currentUser) {

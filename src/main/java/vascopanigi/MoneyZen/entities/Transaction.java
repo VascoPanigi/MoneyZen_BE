@@ -7,11 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vascopanigi.MoneyZen.enums.transaction.TransactionRecurrence;
-import vascopanigi.MoneyZen.enums.transaction.TransactionType;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Set;
 import java.util.UUID;
 
 @Setter

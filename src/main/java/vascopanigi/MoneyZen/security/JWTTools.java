@@ -23,7 +23,6 @@ public class JWTTools {
                 .subject(String.valueOf(user.getId()))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
-
     }
 
     public void verifyToken(String token) {

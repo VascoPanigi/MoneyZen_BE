@@ -3,7 +3,6 @@ package vascopanigi.MoneyZen.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import vascopanigi.MoneyZen.entities.Category;
 import vascopanigi.MoneyZen.entities.PersonalWallet;

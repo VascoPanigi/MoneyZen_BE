@@ -3,7 +3,6 @@ package vascopanigi.MoneyZen.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vascopanigi.MoneyZen.entities.Category;
-import vascopanigi.MoneyZen.entities.User;
 import vascopanigi.MoneyZen.exceptions.NotFoundException;
 import vascopanigi.MoneyZen.repositories.CategoryRepository;
 
@@ -21,6 +20,4 @@ public class CategoryService {
     public List<Category> getAllCategories(){
         return categoryRepository.findAll();
     }
-
-//    public Category saveCategory(NewCategoryDTO body)
 }

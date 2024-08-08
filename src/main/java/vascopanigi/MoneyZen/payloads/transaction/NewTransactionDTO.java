@@ -1,13 +1,11 @@
 package vascopanigi.MoneyZen.payloads.transaction;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 //import vascopanigi.MoneyZen.entities.Label;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.UUID;
+
 
 public record NewTransactionDTO (
         @NotNull
