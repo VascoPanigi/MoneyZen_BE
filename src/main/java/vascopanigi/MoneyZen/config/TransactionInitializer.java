@@ -3,6 +3,7 @@ package vascopanigi.MoneyZen.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import vascopanigi.MoneyZen.entities.Category;
 import vascopanigi.MoneyZen.entities.PersonalWallet;
@@ -21,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -42,9 +42,14 @@ public class TransactionInitializer {
     @Autowired
     private CategoryService categoryService;
 
+    @Value("${admin.id}") // Directly inject the property here
+    private String adminId;
+
     @PostConstruct
     public void initializeTransactions() {
-        UUID userId = UUID.fromString("fc1fa784-939a-4b89-a562-1ac952ef45b9");
+
+        UUID userId = UUID.fromString(adminId);
+        System.out.println(userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id: " + userId + " not found."));
 
