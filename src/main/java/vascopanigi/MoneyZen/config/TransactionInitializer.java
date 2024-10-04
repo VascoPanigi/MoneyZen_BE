@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Configuration
+//@Configuration
 public class TransactionInitializer {
     @Autowired
     private UserRepository userRepository;
