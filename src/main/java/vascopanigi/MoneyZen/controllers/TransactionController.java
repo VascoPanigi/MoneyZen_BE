@@ -15,6 +15,7 @@ import vascopanigi.MoneyZen.payloads.transaction.UpdateTransactionDTO;
 import vascopanigi.MoneyZen.services.TransactionService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,8 +57,14 @@ public class TransactionController {
             @RequestParam(required = false) Double maxAmount,
             @RequestParam(required = false) String name,
             @AuthenticationPrincipal User currentUser) {
-
         return transactionService.findTransactionsByWallet(walletId, pageNumber, pageSize, sortedBy, transactionType, sortOrder, startDateTime, endDateTime, minAmount, maxAmount,name, currentUser);
+    }
+
+    @GetMapping("/wallet/{walletId}/all-transactions")
+    public List<Transaction> getTransactionsByWallet(
+            @PathVariable UUID walletId,
+            @AuthenticationPrincipal User currentUser) {
+        return transactionService.getAllTransactions(walletId, currentUser);
     }
 
     @PutMapping("/{transactionId}")

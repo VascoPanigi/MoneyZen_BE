@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public record NewTransactionDTO (
         @NotNull
-        @Size(min = 2, max=25, message = "Transaction name should be between 2 and 15 characters")
+        @Size(min = 2, max=35, message = "Transaction name should be between 2 and 35 characters")
         String name,
         @NotNull
         double amount,

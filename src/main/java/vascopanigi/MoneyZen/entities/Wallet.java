@@ -25,6 +25,12 @@ public abstract class Wallet {
     private double balance;
     private boolean isShared;
 
+//    private int spentLastMonth;
+//    private int spentThisMonth;
+//
+//    private int gainedThisMonth;
+//    private int gainedLastMonth;
+
 @JsonIgnore
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true     )
     private List<Transaction> transactions;

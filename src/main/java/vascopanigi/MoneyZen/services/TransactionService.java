@@ -72,6 +72,12 @@ public class TransactionService {
         this.transactionRepository.delete(found);
     }
 
+    public List<Transaction> getAllTransactions(UUID walletId, User currentUser){
+        Wallet wallet = this.walletService.getWalletById(walletId, currentUser);
+        return transactionRepository.findByWalletId(walletId);
+
+    }
+
     public Page<Transaction> findTransactionsByWallet(UUID walletId,
                                                       int pageNumber,
                                                       int pageSize,

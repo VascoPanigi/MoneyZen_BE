@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-//@Configuration
+@Configuration
 public class TransactionInitializer {
     @Autowired
     private UserRepository userRepository;
@@ -72,14 +72,14 @@ public class TransactionInitializer {
 
         final double[] balance = {0.0};
 
-        List<Transaction> transactions = IntStream.range(0, 15)
+        List<Transaction> transactions = IntStream.range(0, 50)
                 .mapToObj(i -> {
                     String name = "Transaction " + (i + 1);
                     double amount = random.nextInt(0,100);
 //                    double amount = random.nextDouble() * 100;
                     TransactionRecurrence transactionRecurrence = TransactionRecurrence.NONE;
                     String description = "Description for " + name;
-                    LocalDateTime date = LocalDateTime.now().minusDays(random.nextInt(30));
+                    LocalDateTime date = LocalDateTime.now().minusDays(random.nextInt(15));
                     Category category = categories.get(random.nextInt(categories.size()));
 
                     if (category.getTransactionType().equals(TransactionType.INCOME)) {
